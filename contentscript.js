@@ -59,74 +59,64 @@ const skipempty = '^(?:[ \n\t]+)?';
 var feetInchRegex;
 
 const units = [{
-    regexUnit: new RegExp(skipempty + '((°|º|deg(rees)?)[ \u00A0]?F(ahrenheits?)?|[\u2109])' + skipbrackets + regend, 'ig'),	
-	unit: '°C',
+    regexUnit: new RegExp(skipempty + '((°|º|deg(rees)?)[ \u00A0]?C(elsius?)?|[\u2109])' + skipbrackets + regend, 'ig'),	
+	unit: '°F',
 	multiplier: 1
 }, {
-	//(?!in ) exclude... replaced with
-	// (?:in )?  to exclude converting "born in 1948 in"
-	//old regex: new RegExp('((?:in )?[a-z#$€£\(]?' + intOrFloatNoFrac + unitfrac + sqcu + '[-− \u00A0]?in(ch|ches|²|³)?' + unitSuffixIn + ')', 'ig'), 
-	//added (?=[0-9]) otherwise it will match "it is in something"    
-	//regex: new RegExp('((?:in)?[a-z#$€£\(]?(?=[0-9¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])([\.,0-9]+(?![\/⁄]))?[-− \u00A0]?([¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]|[0-9]+[\/⁄][0-9]+)?([-− \u00A0]?(sq\.?|square|cu\.?|cubic))?[-− \u00A0]?(?:in(ch|ches|²|³)?)( [a-z]+)?'+unitSuffixIn+')', 'ig'),
-    regex: new RegExp('((?:in)?[a-z#$€£\(]?(?=[0-9¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])([\.,0-9]+(?![\/⁄]))?[-− \u00A0]?([¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]|[0-9]+[\/⁄][0-9]+)?([-− \u00A0]?(sq\.?|square|cu\.?|cubic))?[-− \u00A0]?(in(ch|ches|²|³)?[\)]?)( [a-z]+)?'+unitSuffixIn+')', 'ig'),
-	unit: 'cm',
-	unit2: 'mm',
-	multiplier: 2.54,
-	multiplier2: 25.4,
-	multipliercu: 0.0163871,
+    regex: new RegExp('((?:in)?[a-z#$€£\(]?(?=[0-9¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])([\.,0-9]+(?![\/⁄]))?[-− \u00A0]?([¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]|[0-9]+[\/⁄][0-9]+)?([-− \u00A0]?(sq\.?|square|cu\.?|cubic))?[-− \u00A0]?(cm|centimeter(s|²|³)?[\)]?)( [a-z]+)?'+unitSuffixIn+')', 'ig'),
+	unit: 'in',
+	unit2: 'th',
+	multiplier: 0.393701,
+	multiplier2: 393.70078740157,
+	multipliercu: 0.061024,
 	fullround: true
 }, {
-    //([\(]?[°º]? ?([\.,0-9]+(?![\/⁄]))?[-− \u00A0]?([¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]|[0-9]+[\/⁄][0-9]+)?[-− \u00A0]?(\'|′|’)(?![\'′’])(?! ?[\(-\− \u00A0]?[0-9]| \u3010)([^a-z]|$))
 	regex: new RegExp('([\(]?[°º]?[ \u00A0]?' + intOrFloatNoFrac + unitfrac + '[\-− \u00A0]?(\'|′|’)(?![\'′’])' + unitSuffixft + ')', 'g'),
-	unit: 'm',
+	unit: 'ft',
 	multiplier: 0.3048
 }, {
-	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + sqcu + '[\-− \u00A0]?(feet|foot|ft)(²|³)?[\)]?' + unitSuffixft + ')', 'ig'),
-	unit: 'm',
-	multiplier: 0.3048,
-	multipliercu: 28.31690879986443
+	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + sqcu + '[\-− \u00A0]?(meter|metre|m)(²|³)?[\)]?' + unitSuffixft + ')', 'ig'),
+	unit: 'ft',
+	multiplier: 3.28084,
+	multipliercu: 35.3147
 }, {
-	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + sq + '[ \u00A0]?(mi|miles?)(²|³)?' + unitSuffix + ')', 'ig'),
-	unit: 'km',
-	multiplier: 1.60934,
+	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + sq + '[ \u00A0]?(km|kilometer|kilometers?)(²|³)?' + unitSuffix + ')', 'ig'),
+	unit: 'mi',
+	multiplier: 0.621371,
 	fullround: true
 }, {
-	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + sq + '[ \u00A0]?(yards?|yd)(²|³)?' + unitSuffix + ')', 'ig'),
-	unit: 'm',
-	multiplier: 0.9144
-}, {
-	regex: new RegExp(regstart + intOrFloat + '[ \u00A0]?mph' + unitSuffix + ')', 'ig'),
-	unit: 'km\/h',
-	multiplier: 1.60934,
+	regex: new RegExp(regstart + intOrFloat + '[ \u00A0]?(kmph|kph)?' + unitSuffix + ')', 'ig'),
+	unit: 'mi\/h',
+	multiplier: 0.621371,
 	fullround: true,
 	forceround: true
 }, {
-	regexUnit: new RegExp(skipempty + '(pound|lb)s?' + skipbrackets + regend, 'ig'),
-	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + '[ \u00A0\n]?(pound|lb)s?' + unitSuffix + ')', 'ig'),
-	unit: 'kg',
-	unit2: 'g',
-	multiplier: 0.453592,
-	multiplier2: 453.592,
+	regexUnit: new RegExp(skipempty + '(kilogram|kg|kilo)s?' + skipbrackets + regend, 'ig'),
+	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + '[ \u00A0\n]?(kilogram|kg|kilo)s?' + unitSuffix + ')', 'ig'),
+	unit: 'lbs',
+	unit2: 'oz',
+	multiplier: 2.205,
+	multiplier2: 35.274,
 	fullround: true
 }, {
-	regexUnit: new RegExp(skipempty + '(ounces?|oz)' + skipbrackets + regend, 'ig'),
-	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + '[ \u00A0\n]?(ounces?|oz)' + unitSuffix + ')', 'ig'),
-	unit: 'g',
-	multiplier: 28.3495,
+	regexUnit: new RegExp(skipempty + '(grams?|g)' + skipbrackets + regend, 'ig'),
+	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + '[ \u00A0\n]?(grams?|g)' + unitSuffix + ')', 'ig'),
+	unit: 'oz',
+	multiplier: 0.035274,
 	forceround: true
 }, {
 	regexUnit: new RegExp(skipempty + 'fl(uid)? ?(ounces?|oz)' + skipbrackets + regend, 'ig'),
-	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + '[ \u00A0\n]?fl(uid)? ?(ounces?|oz)' + unitSuffix + ')', 'ig'),
-	unit: 'mL',
-	multiplier: 29.5735,
+	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + '[ \u00A0\n]?(milliliters|millilitres?|ml)' + unitSuffix + ')', 'ig'),
+	unit: 'fl oz',
+	multiplier: 0.033814,
 	forceround: true,
-	multiplierimp: 28.4131
+	multiplierimp: 0.033814
 }, {
-	regexUnit: new RegExp(skipempty + 'gal(lons?)' + skipbrackets + regend, 'ig'),
+	regexUnit: new RegExp(skipempty + '(Litre?|Liter|L)' + skipbrackets + regend, 'ig'),
 	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + '[ \u00A0\n]?gal(lons?)?' + unitSuffix + ')', 'ig'),
-	unit: 'L',
-	multiplier: 3.78541,
-	multiplierimp: 4.54609
+	unit: 'Gal',
+	multiplier: 0.264172,
+	multiplierimp: 0.264172
 }, {
 	regexUnit: new RegExp(skipempty + '^pints?' + skipbrackets + regend, 'ig'),
 	regex: new RegExp(regstart + intOrFloatNoFrac + unitfrac + '[ \u00A0\n]?pints?' + unitSuffix + ')', 'ig'),
